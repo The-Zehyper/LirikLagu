@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lagu Tante - Web Player</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      color: #0f0;
+      text-shadow: 0 0 10px #0f0;
+      margin-bottom: 20px;
+    }
+
+    #lcd {
+      width: 320px;
+      height: 100px;
+      background: #001a00;
+      border: 4px solid #0f0;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      text-align: center;
+      white-space: pre-wrap;
+      padding: 10px;
+    }
+
+    #playBtn {
+      margin-top: 25px;
+      padding: 10px 25px;
+      background-color: #0f0;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 15px #00ff00;
+      transition: 0.2s;
+    }
+
+    #playBtn:hover {
+      transform: scale(1.05);
+      background-color: #33ff33;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎶 LCD Lirik "Tante..."</h1>
+  <div id="lcd">Tekan Play...</div>
+  <button id="playBtn">▶ Play</button>
+
+  <!-- 🔊 Audio otomatis loop -->
+  <audio id="audio" src="lagu.mp3" loop></audio>
+
+  <script>
+    const daftarLirik = [
+      "Tanteee",
+      "Sudah Terbiasa",
+      "Terjadi Tante",
+      "Teman Datang",
+      "Ketika Lagi",
+      "Butuh Sajaaa",
+      "Coba Kalo",
+      "Lagi Susahh",
+      "Mereka Semua",
+      "Menghilaaangg",
+      "aangggg",
+      "aangggg",
+      "Tante",
+      "eee",
+      "eee"
+    ];
+
+    const lcd = document.getElementById("lcd");
+    const playBtn = document.getElementById("playBtn");
+    const audio = document.getElementById("audio");
+
+    let indeksLirikSaatIni = 0;
+    let jedaAntarLirik = 1250; // ⚙️ sedikit lebih pelan (dulu 1100)
+    let ketikSpeed = 60;       // ⚙️ efek ketik pelan dikit (dulu 55)
+    let sedangJalan = false;
+    let stopLoop = false;
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function ketikTeks(teks) {
+      lcd.textContent = "";
+      for (let i = 0; i < teks.length; i++) {
+        if (stopLoop) return;
+        lcd.textContent += teks[i];
+        await sleep(ketikSpeed);
+      }
+    }
+
+    async function mainLirik() {
+      while (!stopLoop) {
+        await ketikTeks(daftarLirik[indeksLirikSaatIni]);
+        await sleep(jedaAntarLirik);
+        indeksLirikSaatIni++;
+        if (indeksLirikSaatIni >= daftarLirik.length) {
+          indeksLirikSaatIni = 0;
+        }
+      }
+    }
+
+    playBtn.addEventListener("click", async () => {
+      if (!sedangJalan) {
+        sedangJalan = true;
+        stopLoop = false;
+        audio.play();
+        playBtn.textContent = "⏸ Pause";
+        mainLirik();
+      } else {
+        sedangJalan = false;
+        stopLoop = true;
+        audio.pause();
+        playBtn.textContent = "▶ Play";
+      }
+    });
+  </script>
+
+</body>
+</html>
